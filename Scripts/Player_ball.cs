@@ -1,20 +1,28 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player_ball : MonoBehaviour
 {
 
-    Rigidbody rigid;
+    
     public float jumppower;
     public int itemCount;
+    public GameManagerLogic manager;
     bool isJump;
+
+
+    Rigidbody rigid;
+    AudioSource audio;
+
 
     // Start is called before the first frame update
     void Awake()
     {
         rigid = GetComponent<Rigidbody>();
         isJump = false;
+        audio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -42,7 +50,34 @@ public class Player_ball : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.name == "Floor")
+        if (collision.gameObject.tag == "Floor")
             isJump = false;
+    }
+
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Item")
+        {
+            itemCount++;
+            audio.Play();
+            other.gameObject.SetActive(false);
+
+        }
+        else if (other.tag == "Finish")
+        {
+            if (itemCount == manager.totalItemCount)
+            {
+                //Game Clear
+                SceneManager.LoadScene("SampleScene1_1");
+            }
+            else
+            {
+                //Restart
+                SceneManager.LoadScene("SampleScene1_0");
+            }
+            
+        }
+
     }
 }
